@@ -87,9 +87,12 @@ module "apigateway_v2" {
   description   = "My HTTP API Gateway"
   protocol_type = "HTTP"
 
+  create_domain_name = false
+  create_domain_records = false
+
   routes = {
-    "GET /invokemodel" = {
-      authorization_type   = "none"
+    "POST /invokemodel" = {
+      authorization_type   = "NONE"
       integration = {
         uri                    = module.lambda_function.lambda_function_arn
         payload_format_version = "2.0"
