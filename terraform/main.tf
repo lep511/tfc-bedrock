@@ -44,7 +44,8 @@ module "lambda_function" {
   runtime       = "provided.al2023"
   architectures = ["x86_64"]
   handler       = "bootstrap"
-
+  timeout       = 30
+  
   create_package         = false
   local_existing_package = "bootstrap.zip"
 
@@ -56,6 +57,8 @@ module "lambda_function" {
           {
             "Effect": "Allow",
             "Action": [
+                "bedrock:InvokeModel",
+                "bedrock:InvokeModelWithResponseStream",
                 "bedrock:GetFoundationModel",
                 "bedrock:ListFoundationModels",
                 "bedrock:GetFoundationModelAvailability"
@@ -71,7 +74,7 @@ module "lambda_function" {
     AllowExecutionFromAPIGateway = {
       service    = "apigateway"
       source_arn = "${module.apigateway_v2.api_execution_arn}/*/*"
-    }
+      resource_path = "/invokemodel"
   }
 }
 
