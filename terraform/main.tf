@@ -75,6 +75,7 @@ module "lambda_function" {
       service    = "apigateway"
       source_arn = "${module.apigateway_v2.api_execution_arn}/*/*"
       resource_path = "/invokemodel"
+    }
   }
 }
 
