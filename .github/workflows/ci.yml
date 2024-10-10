@@ -1,0 +1,124 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - "**/README.md"
+      - "**/.gitignore"
+
+permissions:
+  id-token: write
+  contents: read
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    outputs:
+      artifacts: ${{ needs.build.outputs.artifacts }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Install Zig toolchain
+        uses: korandoru/setup-zig@v1
+        with:
+          # Note: make sure you are using a recent version of zig: https://ziglang.org/download/
+          zig-version: 0.13.0
+      - name: Install Cargo Lambda
+        uses: jaxxstorm/action-install-gh-release@v1.9.0
+        with:
+          repo: cargo-lambda/cargo-lambda
+          # Note: make sure you are using a recent version of cargo-lambda: https://github.com/cargo-lambda/cargo-lambda/releases
+          # tag: v1.4.0 # Remove this if you want to grab always the latest version
+          platform: linux # Other valid options: 'windows' or 'darwin'
+          arch: x86_64 # Valid options for linux: x86_64 or aarch64
+
+      # - name: Cache Cargo Dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       lambda-api/.cargo
+      #     key: ${{ runner.os }}-cargo-${{ hashFiles('lambda-api/Cargo.lock') }}
+
+      - name: Build Lambda Project
+        #run: cargo lambda build --release --arm64 --output-format zip
+        run: |
+          cargo lambda build --release --output-format zip
+        working-directory: lambda-api
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: lambda-zip
+          path: lambda-api/target/lambda/lambda-api/bootstrap.zip
+
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:     
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.6
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Pre-build App - Terraform
+        if: contains(github.event.head_commit.message, 'first_deploy')
+        run: |
+          cp ../cloud.tf cloud.tf
+          cp ../variables.tf variables.tf  
+          terraform init -upgrade
+          terraform plan -input=false -no-color
+          terraform apply -auto-approve -input=false -compact-warnings -no-color
+        working-directory: terraform/app
+          
+      - name: Terraform Init
+        run: terraform init -upgrade
+        working-directory: terraform
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: terraform
+
+      - name: Terraform Plan
+        id: Plan
+        run: terraform plan -input=false -no-color
+        working-directory: terraform
+        continue-on-error: true
+
+      - name: Show plan
+        run: |
+          echo "${{ steps.plan.outputs.stdout }}"
+          echo "${{ steps.plan.outputs.stderr }}"
+          echo "${{ steps.plan.outputs.exitcode }}"
+        continue-on-error: true
+      
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: terraform
+          name: lambda-zip
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false -compact-warnings -no-color
+        working-directory: terraform
+

@@ -1,0 +1,22 @@
+{
+    "Records":[
+        {
+            "messageId":"ad378a55-288d-4d4c-854b-99ed9d7c4837",
+            "receiptHandle":"AQEBU9fCSxOAe5y8Pc+yqNf1PfYAo8bRp9pbWkGLtadN0PttqdGEaiQY/LxX3OfYb5Qt6cjdgYK78fEnVIfuRhVHeaeRz++HYx7qARO8BHFudS4Vea+T33ki3BVpHw42iZHpJStNctT0iHcU9lUzlqrAaK13zLmOBxjw41TT9ouoVMZ7Gz/X3nihAW1r0pCKvcK/kPuuUo5GfWctVOQsxGpG43hwA543mGgj7Y3+cFBVqQde5mTcO4WtZ/DvQ8f0FLn7fF1PplScBMq7tZNEHAmojsA/tYKFgOwQ5zkpIGa6A1X4vw5yuw9864Ir7Srt0lUDiYhXedpmiSO9DHdQ88onRAqAeLFRUyWV5W/niPAHS0MqC1NxG3aNN67lbGZrEG9tE95U8P+VHfokaWd+pacZVQ==",
+            "body":"{\"version\":\"0\",\"id\":\"e2197be9-3502-6cf4-82b5-3d5dabfa9363\",\"detail-type\":\"orderCreate\",\"source\":\"api.gateway.orders.create\",\"account\":\"757434145996\",\"time\":\"2024-10-04T21:09:23Z\",\"region\":\"us-east-1\",\"resources\":[],\"detail\":{\"data\":{\"destination\":{\"name\":\"accountName\"},\"orderData\":{\"sourceOrderId\":\"665558\",\"items\":[{\"sku\":\"Business Cards\",\"sourceItemId\":\"1234512346\",\"components\":[{\"code\":\"Content\",\"fetch\":true,\"path\":\"http://www.w2psite.com/businessCard.pdf\"}]}],\"shipments\":[{\"shipTo\":{\"name\":\"John Doe\",\"companyName\":\"Acme\",\"address1\":\"1234 Main St.\",\"town\":\"Capitol\",\"postcode\":\"12345\",\"isoCountry\":\"US\"},\"carrier\":{\"code\":\"fedex\",\"service\":\"ground\"}}]}}}}",
+            "attributes":{
+                "ApproximateReceiveCount":"1",
+                "SentTimestamp":"1728076163192",
+                "SenderId":"AIDAJXNJGGKNS7OSV23OI",
+                "ApproximateFirstReceiveTimestamp":"1728076163199"
+            },
+            "messageAttributes":{
+                
+            },
+            "md5OfBody":"9f9ff02c261cbb42e592b63614d24b60",
+            "eventSource":"aws:sqs",
+            "eventSourceARN":"arn:aws:sqs:us-east-1:757434145996:stage-orderqueue",
+            "awsRegion":"us-east-1"
+        }
+    ]
+}
