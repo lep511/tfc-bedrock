@@ -87,8 +87,8 @@ module "apigateway_v2" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "~> 5.0"
 
-  name          = "${var.environment}-http-api"
-  description   = "My HTTP API Gateway"
+  name          = "${var.environment}-bedrock-api"
+  description   = "Bedrock HTTP API Gateway"
   protocol_type = "HTTP"
 
   create_domain_name = false
